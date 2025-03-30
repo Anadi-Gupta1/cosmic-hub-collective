@@ -1,10 +1,23 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import StarBackground from "@/components/StarBackground";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+// Create a declaration for the custom element
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'spline-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        url: string;
+      };
+    }
+  }
+}
+
 const SplineModels = () => {
+  const splineContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Dynamically load Spline viewer script
     const script = document.createElement('script');
@@ -13,7 +26,10 @@ const SplineModels = () => {
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      // Clean up script when component unmounts
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 
@@ -83,7 +99,7 @@ const SplineModels = () => {
           </div>
           
           {/* Spline Viewers */}
-          <div className="cosmic-card p-6">
+          <div className="cosmic-card p-6" ref={splineContainerRef}>
             <h2 className="text-2xl font-semibold mb-4">Additional Models</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="h-[400px] w-full">
